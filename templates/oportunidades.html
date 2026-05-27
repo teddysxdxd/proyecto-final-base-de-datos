@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Oportunidades{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-chart-line"></i> Canal de Ventas - Oportunidades</h2>
+    <a href="{{ url_for('oportunidad_nuevo') }}" class="btn btn-primary btn-custom">
+        <i class="fas fa-plus"></i> Nueva Oportunidad
+    </a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover" id="tablaOportunidades">
+        <thead class="table-dark">
+            <tr>
+                <th>N° Oportunidad</th>
+                <th>Nombre</th>
+                <th>Cliente</th>
+                <th>Tipo</th>
+                <th>Asistente</th>
+                <th>Etapa Actual</th>
+                <th>% Avance</th>
+                <th>Monto Potencial</th>
+                <th>Monto Ponderado</th>
+                <th>Estado</th>
+                <th>Resultado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for opp in oportunidades %}
+            <tr>
+                <td>{{ opp.numero_oportunidad }}</td>
+                <td>{{ opp.nombre_oportunidad }}</td>
+                <td>{{ opp.nombre_comercial }}</td>
+                <td>{{ opp.tipo_oportunidad }}</td>
+                <td>{{ opp.asistente_comercial }}</td>
+                <td>{{ opp.nombre_etapa }}</td>
+                <td>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar" style="width: {{ opp.porcentaje_cierre }}%;">
+                            {{ opp.porcentaje_cierre }}%
+                        </div>
+                    </div>
+                </td>
+                <td>Q{{ "%.2f"|format(opp.monto_potencial) }}</td>
+                <td>Q{{ "%.2f"|format(opp.monto_ponderado) }}</td>
+                <td>
+                    <span class="status-badge {% if opp.estado_oportunidad == 'Abierto' %}status-abierto{% else %}status-cerrado{% endif %}">
+                        {{ opp.estado_oportunidad }}
+                    </span>
+                </td>
+                <td>
+                    {% if opp.resultado_oportunidad %}
+                        <span class="badge {% if opp.resultado_oportunidad == 'Ganada' %}bg-success{% else %}bg-danger{% endif %}">
+                            {{ opp.resultado_oportunidad }}
+                        </span>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

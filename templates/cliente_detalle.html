@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Detalle Cliente{% endblock %}
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h4><i class="fas fa-building"></i> {{ cliente.nombre_comercial }}</h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Código:</strong> {{ cliente.codigo_cliente }}</p>
+                <p><strong>Razón Social:</strong> {{ cliente.razon_social or '-' }}</p>
+                <p><strong>Dirección:</strong> {{ cliente.direccion_empresa or '-' }}</p>
+                <p><strong>Teléfono:</strong> {{ cliente.telefono or '-' }}</p>
+                <p><strong>Celular:</strong> {{ cliente.celular or '-' }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Email:</strong> {{ cliente.email_empresa or '-' }}</p>
+                <p><strong>Contacto:</strong> {{ cliente.contacto_nombre or '-' }}</p>
+                <p><strong>Teléfono Contacto:</strong> {{ cliente.contacto_telefono or '-' }}</p>
+                <p><strong>División:</strong> 
+                    <span class="badge {% if cliente.nombre_division == 'Cliente Final' %}bg-success{% else %}bg-warning{% endif %}">
+                        {{ cliente.nombre_division }}
+                    </span>
+                </p>
+                <p><strong>Fecha Registro:</strong> {{ cliente.fecha_registro }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h5>Actividades Recientes</h5>
+<div class="table-responsive">
+    <table class="table table-sm">
+        <thead class="table-secondary">
+            <tr>
+                <th>Fecha</th>
+                <th>Asunto</th>
+                <th>Tipo</th>
+                <th>Responsable</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for act in actividades %}
+            <tr>
+                <td>{{ act.fecha }}</td>
+                <td>{{ act.asunto }}</td>
+                <td>{{ act.nombre_tipo }}</td>
+                <td>{{ act.responsable }}</td>
+                <td>{{ act.estado }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="text-center">No hay actividades registradas</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<a href="{{ url_for('clientes') }}" class="btn btn-secondary mt-3">
+    <i class="fas fa-arrow-left"></i> Volver
+</a>
+{% endblock %}

@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver2019
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "desa123$"
+      MSSQL_PID: "Developer"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P desa123$ -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      retries: 10
+      start_period: 30s
+      timeout: 3s
+
+  flask_app:
+    build: .
+    container_name: flask_crm_app
+    ports:
+      - "5001:5000"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      - DB_SERVER=sqlserver
+      - DB_USER=sa
+      - DB_PASSWORD=desa123$
+      - DB_NAME=CRM_Innovacion
+      - DB_DW_NAME=DW_Ventas
+    volumes:
+      - ./templates:/app/templates
+      - ./static:/app/static
+    restart: unless-stopped

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="fas fa-tachometer-alt"></i> Panel de Control</h2>
+    
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card card-stats text-white bg-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Clientes</h5>
+                            <h2>{{ clientes_count|default('0') }}</h2>
+                        </div>
+                        <i class="fas fa-users fa-3x opacity-50"></i>
+                    </div>
+                    <small>Registrados en el sistema</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-stats text-white bg-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Oportunidades Activas</h5>
+                            <h2>{{ oportunidades_activas|default('0') }}</h2>
+                        </div>
+                        <i class="fas fa-chart-line fa-3x opacity-50"></i>
+                    </div>
+                    <small>En seguimiento</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-stats text-white bg-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Actividades Pendientes</h5>
+                            <h2>{{ actividades_pendientes|default('0') }}</h2>
+                        </div>
+                        <i class="fas fa-tasks fa-3x opacity-50"></i>
+                    </div>
+                    <small>Por completar</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-stats text-white bg-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Monto Ponderado Total</h5>
+                           <h2>Q{{ "%.2f"|format(monto_total|default(0)|float) }}</h2>
+                        </div>
+                        <i class="fas fa-dollar-sign fa-3x opacity-50"></i>
+                    </div>
+                    <small>Potencial de ventas</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-pie"></i> Oportunidades por Etapa</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="etapasChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-calendar"></i> Próximas Actividades</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for actividad in ultimas_actividades %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <strong>{{ actividad.asunto }}</strong>
+                                <span class="badge bg-secondary">{{ actividad.fecha }}</span>
+                            </div>
+                            <small>Cliente: {{ actividad.nombre_comercial }} | Responsable: {{ actividad.responsable }}</small>
+                        </div>
+                        {% else %}
+                        <p class="text-muted">No hay actividades próximas</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+fetch('/api/dashboard-data')
+    .then(response => response.json())
+    .then(data => {
+        const ctx = document.getElementById('etapasChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: data.etapas_labels,
+                datasets: [{
+                    data: data.etapas_values,
+                    backgroundColor: ['#1e3c72', '#2a5298', '#28a745', '#ffc107', '#dc3545', '#17a2b8']
+                }]
+            }
+        });
+    });
+</script>
+{% endblock %}

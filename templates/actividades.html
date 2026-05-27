@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Actividades{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tasks"></i> Gestión de Actividades</h2>
+    <a href="{{ url_for('actividad_nuevo') }}" class="btn btn-primary btn-custom">
+        <i class="fas fa-plus"></i> Nueva Actividad
+    </a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>N° Actividad</th>
+                <th>Asunto</th>
+                <th>Cliente</th>
+                <th>Tipo</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Responsable</th>
+                <th>Prioridad</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for act in actividades %}
+            <tr>
+                <td>{{ act.numero_actividad }}</td>
+                <td>{{ act.asunto }}</td>
+                <td>{{ act.nombre_comercial }}</td>
+                <td>{{ act.nombre_tipo }}</td>
+                <td>{{ act.fecha }}</td>
+                <td>{{ act.hora_inicio or '-' }}</td>
+                <td>{{ act.responsable }}</td>
+                <td>
+                    <span class="badge {% if act.prioridad == 'Alto' %}bg-danger{% elif act.prioridad == 'Normal' %}bg-info{% else %}bg-secondary{% endif %}">
+                        {{ act.prioridad }}
+                    </span>
+                </td>
+                <td>
+                    <form method="POST" action="{{ url_for('actividad_cambiar_estado', actividad_id=act.actividad_id) }}" style="display: inline;">
+                        <select name="estado" class="form-select form-select-sm" style="width: auto; display: inline-block;" onchange="this.form.submit()">
+                            <option value="No Iniciado" {% if act.estado == 'No Iniciado' %}selected{% endif %}>No Iniciado</option>
+                            <option value="En Proceso" {% if act.estado == 'En Proceso' %}selected{% endif %}>En Proceso</option>
+                            <option value="En Espera" {% if act.estado == 'En Espera' %}selected{% endif %}>En Espera</option>
+                            <option value="Concluido" {% if act.estado == 'Concluido' %}selected{% endif %}>Concluido</option>
+                        </select>
+                    </form>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-info" onclick="verActividad({{ act.actividad_id }})">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

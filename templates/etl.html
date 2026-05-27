@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}ETL & Data Warehouse{% endblock %}
+{% block content %}
+<h2 class="mb-4"><i class="fas fa-database"></i> Proceso ETL - Data Warehouse</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="fas fa-exchange-alt"></i> Ejecutar ETL</h5>
+            </div>
+            <div class="card-body text-center">
+                <p>Este proceso extrae datos del CRM transaccional y los carga en el Data Warehouse para análisis.</p>
+                <form method="POST" action="{{ url_for('etl_ejecutar') }}">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-play"></i> Ejecutar ETL
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5><i class="fas fa-info-circle"></i> Estructura del Data Warehouse</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <li class="list-group-item"><strong>Dim_Tiempo:</strong> Dimension temporal (fechas)</li>
+                    <li class="list-group-item"><strong>Dim_Cliente:</strong> Dimension de clientes</li>
+                    <li class="list-group-item"><strong>Dim_Empleado:</strong> Dimension de empleados</li>
+                    <li class="list-group-item"><strong>Dim_Etapa:</strong> Dimension de etapas</li>
+                    <li class="list-group-item"><strong>Fact_Oportunidades:</strong> Tabla de hechos</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5><i class="fas fa-chart-line"></i> Consultas Analíticas desde DW</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm" id="dwStats">
+                        <thead>
+                            <tr>
+                                <th>Métrica</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Total Oportunidades en DW</td><td id="totalOpp">-</td></tr>
+                            <tr><td>Total Clientes</td><td id="totalCli">-</td></tr>
+                            <tr><td>Total Empleados</td><td id="totalEmp">-</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+fetch('/api/dw-stats')
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('totalOpp').innerText = data.total_oportunidades;
+        document.getElementById('totalCli').innerText = data.total_clientes;
+        document.getElementById('totalEmp').innerText = data.total_empleados;
+    });
+</script>
+{% endblock %}

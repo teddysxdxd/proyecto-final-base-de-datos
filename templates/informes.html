@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Informes{% endblock %}
+{% block content %}
+<h2 class="mb-4"><i class="fas fa-file-alt"></i> Informes y Reportes</h2>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="fas fa-calendar"></i> Oportunidades por Fecha</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('informes_oportunidades_fecha') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Fecha Inicio</label>
+                        <input type="date" name="fecha_inicio" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha Fin</label>
+                        <input type="date" name="fecha_fin" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Generar Informe</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <h5><i class="fas fa-user-tie"></i> Oportunidades por Gestor</h5>
+            </div>
+            <div class="card-body">
+                <a href="{{ url_for('informes_por_gestor') }}" class="btn btn-success w-100">Ver Reporte</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-warning">
+                <h5><i class="fas fa-chart-bar"></i> Ganadas vs Perdidas</h5>
+            </div>
+            <div class="card-body">
+                <a href="{{ url_for('informes_ganadas_perdidas') }}" class="btn btn-warning w-100">Ver Reporte</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5><i class="fas fa-chart-line"></i> Pipeline de Ventas - Etapas</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="pipelineChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+fetch('/api/pipeline-data')
+    .then(response => response.json())
+    .then(data => {
+        const ctx = document.getElementById('pipelineChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.etapas,
+                datasets: [{
+                    label: 'Cantidad de Oportunidades',
+                    data: data.cantidades,
+                    backgroundColor: '#2a5298',
+                    borderRadius: 10
+                }, {
+                    label: 'Monto Potencial (Q)',
+                    data: data.montos,
+                    backgroundColor: '#28a745',
+                    borderRadius: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Auditoría{% endblock %}
+{% block content %}
+<h2 class="mb-4"><i class="fas fa-history"></i> Registro de Auditoría</h2>
+
+<div class="table-responsive">
+    <table class="table table-sm table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Fecha</th>
+                <th>Tabla</th>
+                <th>Operación</th>
+                <th>Registro ID</th>
+                <th>Datos Anteriores</th>
+                <th>Datos Nuevos</th>
+                <th>Usuario</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reg in auditoria %}
+            <tr>
+                <td>{{ reg.fecha_cambio }}</td>
+                <td>{{ reg.tabla_afectada }}</td>
+                <td>
+                    <span class="badge {% if reg.operacion == 'INSERT' %}bg-success{% elif reg.operacion == 'UPDATE' %}bg-warning{% else %}bg-danger{% endif %}">
+                        {{ reg.operacion }}
+                    </span>
+                </td>
+                <td>{{ reg.registro_id }}</td>
+                <td><small>{{ reg.datos_anteriores or '-' }}</small></td>
+                <td><small>{{ reg.datos_nuevos or '-' }}</small></td>
+                <td>{{ reg.usuario or 'Sistema' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
