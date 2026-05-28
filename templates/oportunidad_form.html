@@ -16,6 +16,10 @@
     .oportunidad-card .card-body {
         padding: 1.5rem;
     }
+    .monto-invalido {
+        border-color: #dc3545 !important;
+        background-color: #fff8f8 !important;
+    }
 </style>
 {% endblock %}
 {% block content %}
@@ -28,21 +32,13 @@
             <div class="row g-3">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Nombre Oportunidad *</label>
-<<<<<<< HEAD
-                    <input type="text" name="nombre_oportunidad" class="form-control" value="{{ form_data.get('nombre_oportunidad', '') if form_data else '' }}" required>
-=======
                     <input type="text" name="nombre_oportunidad" class="form-control" value="{{ oportunidad.nombre_oportunidad if oportunidad else '' }}" required>
->>>>>>> e3d4d04d25da39525416826d978e91307bfc188c
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Tipo Oportunidad *</label>
                     <select name="tipo_oportunidad_id" class="form-control" required>
                         {% for t in tipos %}
-<<<<<<< HEAD
-                        <option value="{{ t.tipo_oportunidad_id }}" {% if form_data and form_data.get('tipo_oportunidad_id') == (t.tipo_oportunidad_id|string) %}selected{% endif %}>{{ t.nombre_tipo }}</option>
-=======
                         <option value="{{ t.tipo_oportunidad_id }}" {% if oportunidad and oportunidad.tipo_oportunidad_id == t.tipo_oportunidad_id %}selected{% endif %}>{{ t.nombre_tipo }}</option>
->>>>>>> e3d4d04d25da39525416826d978e91307bfc188c
                         {% endfor %}
                     </select>
                 </div>
@@ -50,11 +46,7 @@
                     <label class="form-label">Cliente *</label>
                     <select name="cliente_id" class="form-control" required>
                         {% for c in clientes %}
-<<<<<<< HEAD
-                        <option value="{{ c.cliente_id }}" {% if form_data and form_data.get('cliente_id') == (c.cliente_id|string) %}selected{% endif %}>{{ c.nombre_comercial }}</option>
-=======
                         <option value="{{ c.cliente_id }}" {% if oportunidad and oportunidad.cliente_id == c.cliente_id %}selected{% endif %}>{{ c.nombre_comercial }}</option>
->>>>>>> e3d4d04d25da39525416826d978e91307bfc188c
                         {% endfor %}
                     </select>
                 </div>
@@ -62,11 +54,7 @@
                     <label class="form-label">Asistente Comercial *</label>
                     <select name="empleado_asignado_id" class="form-control" required>
                         {% for a in asistentes %}
-<<<<<<< HEAD
-                        <option value="{{ a.empleado_id }}" {% if form_data and form_data.get('empleado_asignado_id') == (a.empleado_id|string) %}selected{% endif %}>{{ a.nombre }} {{ a.apellido }}</option>
-=======
                         <option value="{{ a.empleado_id }}" {% if oportunidad and oportunidad.empleado_asignado_id == a.empleado_id %}selected{% endif %}>{{ a.nombre }} {{ a.apellido }}</option>
->>>>>>> e3d4d04d25da39525416826d978e91307bfc188c
                         {% endfor %}
                     </select>
                 </div>
@@ -74,11 +62,7 @@
                     <label class="form-label">Gerente Comercial *</label>
                     <select name="gerente_comercial_id" class="form-control" required>
                         {% for g in gerentes %}
-<<<<<<< HEAD
-                        <option value="{{ g.empleado_id }}" {% if form_data and form_data.get('gerente_comercial_id') == (g.empleado_id|string) %}selected{% endif %}>{{ g.nombre }} {{ g.apellido }}</option>
-=======
                         <option value="{{ g.empleado_id }}" {% if oportunidad and oportunidad.gerente_comercial_id == g.empleado_id %}selected{% endif %}>{{ g.nombre }} {{ g.apellido }}</option>
->>>>>>> e3d4d04d25da39525416826d978e91307bfc188c
                         {% endfor %}
                     </select>
                 </div>
@@ -86,28 +70,13 @@
                     <label class="form-label">Etapa Actual *</label>
                     <select name="etapa_actual_id" class="form-control" required>
                         {% for e in etapas %}
-<<<<<<< HEAD
-                        <option value="{{ e.etapa_id }}" {% if form_data and form_data.get('etapa_actual_id') == (e.etapa_id|string) %}selected{% endif %}>{{ e.nombre_etapa }} ({{ e.porcentaje_cierre }}%)</option>
-=======
                         <option value="{{ e.etapa_id }}" {% if oportunidad and oportunidad.etapa_actual_id == e.etapa_id %}selected{% endif %}>{{ e.nombre_etapa }} ({{ e.porcentaje_cierre }}%)</option>
->>>>>>> e3d4d04d25da39525416826d978e91307bfc188c
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-3 mb-3">
                     <label class="form-label">Fecha Inicio *</label>
-<<<<<<< HEAD
-                    <input type="date" name="fecha_inicio" class="form-control" value="{{ form_data.get('fecha_inicio', '') if form_data else '' }}" required>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Fecha Cierre Planificada *</label>
-                    <input type="date" name="fecha_cierre_planificada" class="form-control" value="{{ form_data.get('fecha_cierre_planificada', '') if form_data else '' }}" required>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Monto Potencial (Q) *</label>
-                    <input type="number" step="0.01" name="monto_potencial" class="form-control" value="{{ form_data.get('monto_potencial', '') if form_data else '' }}" required>
-=======
-                   <input type="date" name="fecha_inicio" class="form-control" value="{{ oportunidad.fecha_inicio.strftime('%Y-%m-%d') if oportunidad and oportunidad.fecha_inicio else '' }}" {% if not oportunidad %}required{% endif %}>
+                    <input type="date" name="fecha_inicio" class="form-control" value="{{ oportunidad.fecha_inicio.strftime('%Y-%m-%d') if oportunidad and oportunidad.fecha_inicio else '' }}" {% if not oportunidad %}required{% endif %}>
                 </div>
                 <div class="col-md-3 mb-3">
                     <label class="form-label">Fecha Cierre Planificada *</label>
@@ -134,8 +103,14 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Monto Potencial (Q) *</label>
-                    <input type="number" step="0.01" name="monto_potencial" class="form-control" value="{{ oportunidad.monto_potencial if oportunidad else '' }}" required>
->>>>>>> e3d4d04d25da39525416826d978e91307bfc188c
+                    <input type="text" 
+                           name="monto_potencial" 
+                           id="monto_potencial"
+                           class="form-control" 
+                           value="{{ oportunidad.monto_potencial if oportunidad else '' }}" 
+                           required
+                           placeholder="Ejemplo: 15000.00">
+                    <small class="text-muted">Solo números positivos, máximo 2 decimales</small>
                 </div>
             </div>
             <div class="mt-4 d-flex gap-2">
@@ -145,4 +120,140 @@
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const montoInput = document.getElementById('monto_potencial');
+    
+    // Función para limitar a 2 decimales mientras se escribe
+    function limitarDecimales(event) {
+        const input = event.target;
+        let valor = input.value;
+        
+        // Si se presiona punto y ya hay un punto, prevenir
+        if (event.key === '.' && valor.includes('.')) {
+            event.preventDefault();
+            return false;
+        }
+        
+        // Permitir teclas de control
+        const teclasPermitidas = ['Backspace', 'Delete', 'Tab', 'Enter', 'Escape', 
+                                   'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 
+                                   'Home', 'End'];
+        if (teclasPermitidas.includes(event.key)) {
+            return true;
+        }
+        
+        // Prevenir letras (incluyendo 'e')
+        if (!/^[0-9.]$/.test(event.key)) {
+            event.preventDefault();
+            return false;
+        }
+        
+        // Después de escribir, verificar y limitar decimales
+        setTimeout(() => {
+            let nuevoValor = input.value;
+            const partes = nuevoValor.split('.');
+            
+            if (partes.length === 2) {
+                // Limitar a 2 decimales
+                if (partes[1].length > 2) {
+                    input.value = partes[0] + '.' + partes[1].substring(0, 2);
+                }
+            }
+        }, 10);
+    }
+    
+    // Validar cuando se pierde el foco
+    function validarAlSalir() {
+        let valor = montoInput.value.trim();
+        
+        if (valor === '') {
+            return;
+        }
+        
+        // Eliminar múltiples puntos
+        const partes = valor.split('.');
+        if (partes.length > 2) {
+            valor = partes[0] + '.' + partes.slice(1).join('');
+        }
+        
+        // Convertir a número
+        let numero = parseFloat(valor);
+        
+        if (isNaN(numero)) {
+            montoInput.value = '';
+            montoInput.classList.add('monto-invalido');
+            setTimeout(() => {
+                montoInput.classList.remove('monto-invalido');
+            }, 1000);
+            return;
+        }
+        
+        if (numero < 0) {
+            montoInput.value = '';
+            alert('El monto no puede ser negativo');
+            return;
+        }
+        
+        // Formatear a 2 decimales
+        montoInput.value = numero.toFixed(2);
+    }
+    
+    // Validar al enviar el formulario
+    document.querySelector('form').addEventListener('submit', function(e) {
+        let valor = montoInput.value.trim();
+        
+        if (valor === '' || valor === null) {
+            e.preventDefault();
+            alert('Por favor ingrese un monto válido');
+            montoInput.focus();
+            return false;
+        }
+        
+        const regex = /^\d+(\.\d{1,2})?$/;
+        if (!regex.test(valor)) {
+            e.preventDefault();
+            alert('Formato inválido. Use solo números positivos, máximo 2 decimales. Ejemplo: 15000.00');
+            montoInput.focus();
+            return false;
+        }
+        
+        let numero = parseFloat(valor);
+        if (isNaN(numero) || numero < 0) {
+            e.preventDefault();
+            alert('Por favor ingrese un monto positivo válido');
+            montoInput.focus();
+            return false;
+        }
+        
+        montoInput.value = numero.toFixed(2);
+    });
+    
+    // Prevenir pegado de texto inválido
+    montoInput.addEventListener('paste', function(e) {
+        e.preventDefault();
+        const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+        let filtered = pastedText.replace(/[^0-9.]/g, '');
+        
+        // Prevenir múltiples puntos
+        const partes = filtered.split('.');
+        if (partes.length > 2) {
+            filtered = partes[0] + '.' + partes.slice(1).join('');
+        }
+        
+        // Limitar decimales
+        if (partes.length === 2 && partes[1].length > 2) {
+            filtered = partes[0] + '.' + partes[1].substring(0, 2);
+        }
+        
+        montoInput.value = filtered;
+        validarAlSalir();
+    });
+    
+    // Eventos del input
+    montoInput.addEventListener('keydown', limitarDecimales);
+    montoInput.addEventListener('blur', validarAlSalir);
+</script>
 {% endblock %}
