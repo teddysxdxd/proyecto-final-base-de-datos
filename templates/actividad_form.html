@@ -1,109 +1,155 @@
-{% extends "base.html" %}
-{% block title %}{{ titulo }}{% endblock %}
-{% block content %}
-<div class="card">
-    <div class="card-header">
-        <h4><i class="fas fa-tasks"></i> {{ titulo }}</h4>
-    </div>
-    <div class="card-body">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo }} - CRM Innovación</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">CRM Innovación</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/clientes">Clientes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/oportunidades">Oportunidades</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/actividades">Actividades</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/informes">Informes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/etl">ETL</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/auditoria">Auditoría</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2>{{ titulo }}</h2>
+        
         <form method="POST">
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Cliente *</label>
-                    <select name="cliente_id" class="form-control" required>
-                        {% for c in clientes %}
-                        <option value="{{ c.cliente_id }}">{{ c.nombre_comercial }}</option>
+                    <label for="cliente_id" class="form-label">Cliente *</label>
+                    <select class="form-control" id="cliente_id" name="cliente_id" required>
+                        <option value="">Seleccione un cliente...</option>
+                        {% for cliente in clientes %}
+                        <option value="{{ cliente.cliente_id }}">{{ cliente.nombre_comercial }}</option>
                         {% endfor %}
                     </select>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Oportunidad (opcional)</label>
-                    <select name="oportunidad_id" class="form-control">
-                        <option value="">-- Sin oportunidad --</option>
-                        {% for o in oportunidades %}
-                        <option value="{{ o.oportunidad_id }}">{{ o.nombre_oportunidad }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Responsable *</label>
-                    <select name="empleado_responsable_id" class="form-control" required>
-                        {% for e in empleados %}
-                        <option value="{{ e.empleado_id }}">{{ e.nombre }} {{ e.apellido }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Tipo Actividad *</label>
-                    <select name="tipo_actividad_id" class="form-control" required id="tipoActividad">
-                        {% for t in tipos %}
-                        <option value="{{ t.tipo_actividad_id }}">{{ t.nombre_tipo }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-12 mb-3">
-                    <label class="form-label">Asunto *</label>
-                    <input type="text" name="asunto" class="form-control" required>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Fecha *</label>
-                    <input type="date" name="fecha" class="form-control" value="{{ datetime.now().strftime('%Y-%m-%d') }}" required>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Hora Inicio</label>
-                    <input type="time" name="hora_inicio" class="form-control">
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Hora Fin</label>
-                    <input type="time" name="hora_fin" class="form-control">
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Prioridad</label>
-                    <select name="prioridad" class="form-control">
-                        <option value="Alto">Alto</option>
-                        <option value="Normal" selected>Normal</option>
-                        <option value="Bajo">Bajo</option>
-                    </select>
-                </div>
-                <div class="col-md-12 mb-3">
-                    <label class="form-label">Comentario</label>
-                    <textarea name="comentario" class="form-control" rows="3"></textarea>
                 </div>
                 
-                <!-- Campos para Reunión (se muestran solo si se selecciona Reunión) -->
-                <div id="reunionFields" style="display: none;">
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Calle</label>
-                        <input type="text" name="calle" class="form-control">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Ciudad</label>
-                        <input type="text" name="ciudad" class="form-control">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Sala</label>
-                        <input type="text" name="sala" class="form-control">
-                    </div>
+                <div class="col-md-6 mb-3">
+                    <label for="oportunidad_id" class="form-label">Oportunidad (opcional)</label>
+                    <select class="form-control" id="oportunidad_id" name="oportunidad_id">
+                        <option value="">Sin oportunidad asociada</option>
+                        {% for oportunidad in oportunidades %}
+                        <option value="{{ oportunidad.oportunidad_id }}">{{ oportunidad.nombre_oportunidad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="empleado_responsable_id" class="form-label">Empleado Responsable *</label>
+                    <select class="form-control" id="empleado_responsable_id" name="empleado_responsable_id" required>
+                        <option value="">Seleccione...</option>
+                        {% for empleado in empleados %}
+                        <option value="{{ empleado.empleado_id }}">{{ empleado.nombre }} {{ empleado.apellido }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="tipo_actividad_id" class="form-label">Tipo de Actividad *</label>
+                    <select class="form-control" id="tipo_actividad_id" name="tipo_actividad_id" required>
+                        <option value="">Seleccione...</option>
+                        {% for tipo in tipos %}
+                        <option value="{{ tipo.tipo_actividad_id }}">{{ tipo.nombre_tipo }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="col-12 mb-3">
+                    <label for="asunto" class="form-label">Asunto *</label>
+                    <input type="text" class="form-control" id="asunto" name="asunto" required>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="fecha" class="form-label">Fecha *</label>
+                    <input type="date" class="form-control" id="fecha" name="fecha" required>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="hora_inicio" class="form-label">Hora Inicio</label>
+                    <input type="time" class="form-control" id="hora_inicio" name="hora_inicio">
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="hora_fin" class="form-label">Hora Fin</label>
+                    <input type="time" class="form-control" id="hora_fin" name="hora_fin">
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="prioridad" class="form-label">Prioridad</label>
+                    <select class="form-control" id="prioridad" name="prioridad">
+                        <option value="Bajo">Bajo</option>
+                        <option value="Normal" selected>Normal</option>
+                        <option value="Alto">Alto</option>
+                    </select>
+                </div>
+                
+                <div class="col-12 mb-3">
+                    <label for="comentario" class="form-label">Comentario</label>
+                    <textarea class="form-control" id="comentario" name="comentario" rows="3"></textarea>
+                </div>
+                
+                <!-- Campos específicos para reuniones -->
+                <div class="col-md-4 mb-3">
+                    <label for="calle" class="form-label">Calle (para reuniones)</label>
+                    <input type="text" class="form-control" id="calle" name="calle">
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="ciudad" class="form-label">Ciudad</label>
+                    <input type="text" class="form-control" id="ciudad" name="ciudad">
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="sala" class="form-label">Sala</label>
+                    <input type="text" class="form-control" id="sala" name="sala">
                 </div>
             </div>
-            <div class="mt-3">
-                <button type="submit" class="btn btn-primary">Guardar</button>
-                <a href="{{ url_for('actividades') }}" class="btn btn-secondary">Cancelar</a>
-            </div>
+            
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a href="/actividades" class="btn btn-secondary">Cancelar</a>
         </form>
     </div>
-</div>
-
-<script>
-document.getElementById('tipoActividad').addEventListener('change', function() {
-    var tipo = this.options[this.selectedIndex].text;
-    var reunionFields = document.getElementById('reunionFields');
-    if (tipo === 'Reunión') {
-        reunionFields.style.display = 'flex';
-        reunionFields.style.flexWrap = 'wrap';
-    } else {
-        reunionFields.style.display = 'none';
-    }
-});
-</script>
-{% endblock %}
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Establecer fecha actual automáticamente
+        document.addEventListener('DOMContentLoaded', function() {
+            const hoy = new Date().toISOString().split('T')[0];
+            const fechaInput = document.getElementById('fecha');
+            
+            if (fechaInput && !fechaInput.value) {
+                fechaInput.value = hoy;
+            }
+        });
+    </script>
+</body>
+</html>
