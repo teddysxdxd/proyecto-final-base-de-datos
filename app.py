@@ -95,30 +95,92 @@ def oportunidades():
 def oportunidad_nuevo():
     if request.method == 'POST':
         try:
+            fecha_inicio = request.form.get('fecha_inicio', '').strip()
+            fecha_cierre = request.form.get('fecha_cierre_planificada', '').strip()
+
+            if fecha_inicio and fecha_cierre:
+                inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d')
+                cierre = datetime.strptime(fecha_cierre, '%Y-%m-%d')
+                if cierre < inicio:
+                    flash('La fecha de cierre planificada no puede ser anterior a la fecha de inicio.', 'danger')
+                    conn = get_db_connection()
+                    cursor = conn.cursor()
+                    cursor.execute("SELECT cliente_id, nombre_comercial FROM Clientes WHERE activo=1 ORDER BY nombre_comercial")
+                    clientes = cursor.fetchall()
+                    cursor.execute("SELECT empleado_id, nombre, apellido, cargo FROM Empleados WHERE activo=1")
+                    empleados = cursor.fetchall()
+                    cursor.execute("SELECT tipo_oportunidad_id, nombre_tipo FROM TiposOportunidad")
+                    tipos = cursor.fetchall()
+                    cursor.execute("SELECT etapa_id, nombre_etapa, porcentaje_cierre FROM EtapasOportunidad ORDER BY orden")
+                    etapas = cursor.fetchall()
+                    cursor.close()
+                    conn.close()
+                    asistentes = [e for e in empleados if e.cargo == 'Asistente Comercial']
+                    gerentes = [e for e in empleados if e.cargo == 'Gerente Comercial']
+                    return render_template('oportunidad_form.html', clientes=clientes, asistentes=asistentes,
+                                          gerentes=gerentes, tipos=tipos, etapas=etapas,
+                                          titulo="Nueva Oportunidad", form_data=request.form)
+
             conn = get_db_connection()
             cursor = conn.cursor()
-            
+
             # Generar número de oportunidad
             cursor.execute("SELECT 'OP-' + CAST(YEAR(GETDATE()) AS VARCHAR) + '-' + RIGHT('000' + CAST(ISNULL(MAX(CAST(RIGHT(numero_oportunidad, 3) AS INT)), 0) + 1 AS VARCHAR(3)), 3) FROM Oportunidades")
             numero = cursor.fetchone()[0]
-            
+
             cursor.execute("""EXEC sp_Oportunidad_Insert
                 @numero_oportunidad=?, @nombre_oportunidad=?, @tipo_oportunidad_id=?,
                 @cliente_id=?, @empleado_asignado_id=?, @gerente_comercial_id=?,
                 @fecha_inicio=?, @fecha_cierre_planificada=?, @etapa_actual_id=?, @monto_potencial=?""",
                 numero, request.form['nombre_oportunidad'], int(request.form['tipo_oportunidad_id']),
                 int(request.form['cliente_id']), int(request.form['empleado_asignado_id']),
-                int(request.form['gerente_comercial_id']), request.form['fecha_inicio'],
-                request.form['fecha_cierre_planificada'], int(request.form['etapa_actual_id']),
+                int(request.form['gerente_comercial_id']), fecha_inicio,
+                fecha_cierre, int(request.form['etapa_actual_id']),
                 float(request.form['monto_potencial']))
-            
+
             conn.commit()
             cursor.close()
             conn.close()
             flash('Oportunidad creada exitosamente', 'success')
             return redirect(url_for('oportunidades'))
+        except ValueError:
+            flash('Las fechas deben tener formato válido.', 'danger')
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT cliente_id, nombre_comercial FROM Clientes WHERE activo=1 ORDER BY nombre_comercial")
+            clientes = cursor.fetchall()
+            cursor.execute("SELECT empleado_id, nombre, apellido, cargo FROM Empleados WHERE activo=1")
+            empleados = cursor.fetchall()
+            cursor.execute("SELECT tipo_oportunidad_id, nombre_tipo FROM TiposOportunidad")
+            tipos = cursor.fetchall()
+            cursor.execute("SELECT etapa_id, nombre_etapa, porcentaje_cierre FROM EtapasOportunidad ORDER BY orden")
+            etapas = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            asistentes = [e for e in empleados if e.cargo == 'Asistente Comercial']
+            gerentes = [e for e in empleados if e.cargo == 'Gerente Comercial']
+            return render_template('oportunidad_form.html', clientes=clientes, asistentes=asistentes,
+                                  gerentes=gerentes, tipos=tipos, etapas=etapas,
+                                  titulo="Nueva Oportunidad", form_data=request.form)
         except Exception as e:
             flash(f'Error: {str(e)}', 'danger')
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT cliente_id, nombre_comercial FROM Clientes WHERE activo=1 ORDER BY nombre_comercial")
+            clientes = cursor.fetchall()
+            cursor.execute("SELECT empleado_id, nombre, apellido, cargo FROM Empleados WHERE activo=1")
+            empleados = cursor.fetchall()
+            cursor.execute("SELECT tipo_oportunidad_id, nombre_tipo FROM TiposOportunidad")
+            tipos = cursor.fetchall()
+            cursor.execute("SELECT etapa_id, nombre_etapa, porcentaje_cierre FROM EtapasOportunidad ORDER BY orden")
+            etapas = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            asistentes = [e for e in empleados if e.cargo == 'Asistente Comercial']
+            gerentes = [e for e in empleados if e.cargo == 'Gerente Comercial']
+            return render_template('oportunidad_form.html', clientes=clientes, asistentes=asistentes,
+                                  gerentes=gerentes, tipos=tipos, etapas=etapas,
+                                  titulo="Nueva Oportunidad", form_data=request.form)
     
     # GET
     conn = get_db_connection()
