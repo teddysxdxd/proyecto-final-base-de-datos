@@ -200,7 +200,65 @@ def oportunidad_nuevo():
     gerentes = [e for e in empleados if e.cargo == 'Gerente Comercial']
     
     return render_template('oportunidad_form.html', clientes=clientes, asistentes=asistentes,
-                          gerentes=gerentes, tipos=tipos, etapas=etapas, titulo="Nueva Oportunidad")
+                          gerentes=gerentes, tipos=tipos, etapas=etapas, titulo="Nueva Oportunidad",
+                          oportunidad=None)
+
+
+@app.route('/oportunidad/<int:oportunidad_id>/editar', methods=['GET', 'POST'])
+def oportunidad_editar(oportunidad_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        try:
+            cursor.execute("""EXEC sp_Oportunidad_Update
+                @oportunidad_id=?, @nombre_oportunidad=?, @tipo_oportunidad_id=?,
+                @cliente_id=?, @empleado_asignado_id=?, @gerente_comercial_id=?,
+                @estado_oportunidad=?, @fecha_cierre_planificada=?, @fecha_cierre_real=?,
+                @etapa_actual_id=?, @monto_potencial=?, @resultado_oportunidad=?""",
+                oportunidad_id,
+                request.form['nombre_oportunidad'],
+                int(request.form['tipo_oportunidad_id']),
+                int(request.form['cliente_id']),
+                int(request.form['empleado_asignado_id']),
+                int(request.form['gerente_comercial_id']),
+                request.form['estado_oportunidad'],
+                request.form['fecha_cierre_planificada'] or None,
+                request.form['fecha_cierre_real'] or None,
+                int(request.form['etapa_actual_id']),
+                float(request.form['monto_potencial']),
+                request.form.get('resultado_oportunidad') or None)
+            conn.commit()
+            flash('Oportunidad actualizada exitosamente', 'success')
+            return redirect(url_for('oportunidades'))
+        except Exception as e:
+            flash(f'Error al actualizar oportunidad: {str(e)}', 'danger')
+
+    cursor.execute("EXEC sp_Oportunidad_GetById ?", oportunidad_id)
+    oportunidad = cursor.fetchone()
+    if not oportunidad:
+        cursor.close()
+        conn.close()
+        flash('Oportunidad no encontrada', 'warning')
+        return redirect(url_for('oportunidades'))
+
+    cursor.execute("SELECT cliente_id, nombre_comercial FROM Clientes WHERE activo=1 ORDER BY nombre_comercial")
+    clientes = cursor.fetchall()
+    cursor.execute("SELECT empleado_id, nombre, apellido, cargo FROM Empleados WHERE activo=1")
+    empleados = cursor.fetchall()
+    cursor.execute("SELECT tipo_oportunidad_id, nombre_tipo FROM TiposOportunidad")
+    tipos = cursor.fetchall()
+    cursor.execute("SELECT etapa_id, nombre_etapa, porcentaje_cierre FROM EtapasOportunidad ORDER BY orden")
+    etapas = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    asistentes = [e for e in empleados if e.cargo == 'Asistente Comercial']
+    gerentes = [e for e in empleados if e.cargo == 'Gerente Comercial']
+
+    return render_template('oportunidad_form.html', clientes=clientes, asistentes=asistentes,
+                          gerentes=gerentes, tipos=tipos, etapas=etapas, titulo="Editar Oportunidad",
+                          oportunidad=oportunidad)
 
 @app.route('/actividades')
 def actividades():
@@ -387,7 +445,7 @@ def api_dashboard_data():
     cursor = conn.cursor()
     
     # Estadísticas para el dashboard
-    cursor.execute("SELECT COUNT(*) FROM Clientes WHERE activo=1")
+    cursor.execute("SELECT COUNT(*) FROM Clientes")
     clientes_count = cursor.fetchone()[0]
     
     cursor.execute("SELECT COUNT(*) FROM Oportunidades WHERE estado_oportunidad='Abierto' AND activo=1")
@@ -396,12 +454,13 @@ def api_dashboard_data():
     cursor.execute("SELECT COUNT(*) FROM Actividades WHERE estado NOT IN ('Concluido')")
     actividades_pendientes = cursor.fetchone()[0]
     
-    # CORREGIDO: Usar la vista vw_Oportunidades para obtener monto_ponderado
+    # Sumar solo oportunidades abiertas y activas para reflejar el pipeline vigente
     cursor.execute("""
         SELECT ISNULL(SUM(v.monto_ponderado), 0) 
         FROM vw_Oportunidades v
         INNER JOIN Oportunidades o ON v.oportunidad_id = o.oportunidad_id
         WHERE o.activo = 1
+          AND o.estado_oportunidad = 'Abierto'
     """)
     monto_total = cursor.fetchone()[0]
     

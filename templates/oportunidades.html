@@ -65,6 +65,7 @@
                 <th>Monto Ponderado</th>
                 <th>Estado</th>
                 <th>Resultado</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -102,6 +103,11 @@
                     {% else %}
                         -
                     {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('oportunidad_editar', oportunidad_id=opp.oportunidad_id) }}" class="btn btn-sm btn-outline-primary" title="Editar oportunidad">
+                        <i class="fas fa-edit"></i>
+                    </a>
                 </td>
             </tr>
             {% endfor %}

@@ -50,26 +50,13 @@
                     </form>
                 </td>
                 <td>
-                    <button class="btn btn-sm btn-info" onclick="verActividad({{ act.actividad_id }})">
+                    <a class="btn btn-sm btn-info" href="{{ url_for('cliente_ver', cliente_id=act.cliente_id) }}" title="Ver cliente">
                         <i class="fas fa-eye"></i>
-                    </button>
+                    </a>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-    function verActividad(actividadId) {
-        // Mostrar un modal con los detalles de la actividad
-        // Por ahora, una alerta simple
-        alert('Ver detalles de actividad ID: ' + actividadId);
-        
-        // Si quieres redirigir a una página de detalle, usa esto:
-        // window.location.href = '/actividad/' + actividadId;
-    }
-</script>
 {% endblock %}
