@@ -32,7 +32,23 @@ def get_dw_connection():
 # ==================== RUTAS PRINCIPALES ====================
 @app.route('/')
 def index():
-    return render_template('index.html')
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT TOP 5 a.asunto, a.fecha, c.nombre_comercial, e.nombre + ' ' + e.apellido as responsable
+        FROM Actividades a
+        INNER JOIN Clientes c ON a.cliente_id = c.cliente_id
+        INNER JOIN Empleados e ON a.empleado_responsable_id = e.empleado_id
+        WHERE a.fecha >= CAST(GETDATE() AS DATE)
+        ORDER BY a.fecha ASC, a.hora_inicio ASC
+    """)
+    ultimas_actividades = [
+        {'asunto': row[0], 'fecha': str(row[1]), 'nombre_comercial': row[2], 'responsable': row[3]}
+        for row in cursor.fetchall()
+    ]
+    cursor.close()
+    conn.close()
+    return render_template('index.html', ultimas_actividades=ultimas_actividades)
 
 @app.route('/clientes')
 def clientes():
