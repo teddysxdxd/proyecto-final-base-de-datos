@@ -218,7 +218,28 @@ def actividad_cambiar_estado(actividad_id):
     except Exception as e:
         flash(f'Error: {str(e)}', 'danger')
     return redirect(url_for('actividades'))
-
+@app.route('/actividad/<int:actividad_id>')
+def actividad_ver(actividad_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT a.*, t.nombre_tipo, e.nombre + ' ' + e.apellido AS responsable, 
+               c.nombre_comercial
+        FROM Actividades a
+        INNER JOIN TiposActividad t ON a.tipo_actividad_id = t.tipo_actividad_id
+        INNER JOIN Empleados e ON a.empleado_responsable_id = e.empleado_id
+        INNER JOIN Clientes c ON a.cliente_id = c.cliente_id
+        WHERE a.actividad_id = ?
+    """, actividad_id)
+    actividad = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    
+    if actividad:
+        return render_template('actividad_detalle.html', actividad=actividad)
+    else:
+        flash('Actividad no encontrada', 'danger')
+        return redirect(url_for('actividades'))
 @app.route('/informes')
 def informes():
     return render_template('informes.html')
@@ -433,6 +454,8 @@ def cliente_delete(cliente_id):
     conn.close()
     flash('Cliente eliminado exitosamente', 'success')
     return redirect(url_for('clientes'))
+
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
