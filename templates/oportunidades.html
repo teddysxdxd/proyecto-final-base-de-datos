@@ -1,11 +1,53 @@
 {% extends "base.html" %}
 {% block title %}Oportunidades{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="fas fa-chart-line"></i> Canal de Ventas - Oportunidades</h2>
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h2 class="mb-1"><i class="fas fa-chart-line"></i> Canal de Ventas - Oportunidades</h2>
+        <p class="text-muted mb-0">Mostrando las oportunidades más recientes primero.</p>
+    </div>
     <a href="{{ url_for('oportunidad_nuevo') }}" class="btn btn-primary btn-custom">
         <i class="fas fa-plus"></i> Nueva Oportunidad
     </a>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Buscar</label>
+                <input type="text" id="buscarOportunidad" class="form-control" placeholder="Nombre, cliente o tipo...">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Estado</label>
+                <select id="filtroEstado" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="Abierto">Abierto</option>
+                    <option value="Cerrado">Cerrado</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Tipo</label>
+                <select id="filtroTipo" class="form-select">
+                    <option value="">Todos</option>
+                    {% set tipos_unicos = oportunidades|map(attribute='tipo_oportunidad')|unique|list %}
+                    {% for tipo in tipos_unicos %}
+                    <option value="{{ tipo }}">{{ tipo }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Cliente</label>
+                <select id="filtroCliente" class="form-select">
+                    <option value="">Todos</option>
+                    {% set clientes_unicos = oportunidades|map(attribute='nombre_comercial')|unique|list %}
+                    {% for cliente in clientes_unicos %}
+                    <option value="{{ cliente }}">{{ cliente }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="table-responsive">
@@ -28,7 +70,11 @@
         </thead>
         <tbody>
             {% for opp in oportunidades %}
-            <tr>
+            <tr data-nombre="{{ opp.nombre_oportunidad|lower }}"
+                data-cliente="{{ opp.nombre_comercial|lower }}"
+                data-tipo="{{ opp.tipo_oportunidad|lower }}"
+                data-estado="{{ opp.estado_oportunidad|lower }}"
+                data-fecha="{{ opp.fecha_creacion }}">
                 <td>{{ opp.numero_oportunidad }}</td>
                 <td>{{ opp.nombre_oportunidad }}</td>
                 <td>{{ opp.nombre_comercial }}</td>
@@ -37,7 +83,7 @@
                 <td>{{ opp.nombre_etapa }}</td>
                 <td>
                     <div class="progress" style="height: 20px;">
-                        <div class="progress-bar" style="width: {{ opp.porcentaje_cierre }}%;">
+                        <div class="progress-bar" style="width: {{ opp.porcentaje_cierre|float }}%;">
                             {{ opp.porcentaje_cierre }}%
                         </div>
                     </div>
@@ -68,4 +114,37 @@
         </tbody>
     </table>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const buscar = document.getElementById('buscarOportunidad');
+        const filtroEstado = document.getElementById('filtroEstado');
+        const filtroTipo = document.getElementById('filtroTipo');
+        const filtroCliente = document.getElementById('filtroCliente');
+        const tabla = document.getElementById('tablaOportunidades');
+
+        function filtrar() {
+            const texto = (buscar.value || '').toLowerCase().trim();
+            const estado = (filtroEstado.value || '').toLowerCase();
+            const tipo = (filtroTipo.value || '').toLowerCase();
+            const cliente = (filtroCliente.value || '').toLowerCase();
+
+            Array.from(tabla.querySelectorAll('tbody tr')).forEach(function (row) {
+                const coincideTexto = !texto || row.dataset.nombre.includes(texto) || row.dataset.cliente.includes(texto) || row.dataset.tipo.includes(texto);
+                const coincideEstado = !estado || row.dataset.estado === estado;
+                const coincideTipo = !tipo || row.dataset.tipo === tipo.toLowerCase();
+                const coincideCliente = !cliente || row.dataset.cliente === cliente.toLowerCase();
+
+                row.style.display = (coincideTexto && coincideEstado && coincideTipo && coincideCliente) ? '' : 'none';
+            });
+        }
+
+        [buscar, filtroEstado, filtroTipo, filtroCliente].forEach(function (campo) {
+            campo.addEventListener('input', filtrar);
+            campo.addEventListener('change', filtrar);
+        });
+    });
+</script>
 {% endblock %}

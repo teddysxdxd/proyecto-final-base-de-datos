@@ -206,7 +206,7 @@ BEGIN
     INNER JOIN TiposOportunidad t ON o.tipo_oportunidad_id = t.tipo_oportunidad_id
     INNER JOIN EtapasOportunidad et ON o.etapa_actual_id = et.etapa_id
     WHERE o.activo = 1
-    ORDER BY o.fecha_creacion DESC;
+    ORDER BY o.fecha_creacion DESC, o.oportunidad_id DESC;
 END;
 GO
 
