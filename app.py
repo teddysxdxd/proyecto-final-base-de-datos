@@ -311,10 +311,11 @@ def informes_oportunidades_fecha():
     cursor = conn.cursor()
     cursor.execute("EXEC sp_Reporte_OportunidadesPorFecha ?, ?", fecha_inicio, fecha_fin)
     resultados = cursor.fetchall()
+    columnas = [col[0] for col in cursor.description] if cursor.description else []
     cursor.close()
     conn.close()
     
-    return render_template('informes_resultados.html', resultados=resultados, titulo="Oportunidades por Fecha")
+    return render_template('informes_resultados.html', resultados=resultados, columnas=columnas, titulo="Oportunidades por Fecha")
 
 @app.route('/informes/por_gestor')
 def informes_por_gestor():
@@ -322,9 +323,10 @@ def informes_por_gestor():
     cursor = conn.cursor()
     cursor.execute("EXEC sp_Reporte_OportunidadesPorGestor")
     resultados = cursor.fetchall()
+    columnas = [col[0] for col in cursor.description] if cursor.description else []
     cursor.close()
     conn.close()
-    return render_template('informes_resultados.html', resultados=resultados, titulo="Oportunidades por Gestor")
+    return render_template('informes_resultados.html', resultados=resultados, columnas=columnas, titulo="Oportunidades por Gestor")
 
 @app.route('/informes/ganadas_perdidas')
 def informes_ganadas_perdidas():
@@ -332,9 +334,10 @@ def informes_ganadas_perdidas():
     cursor = conn.cursor()
     cursor.execute("EXEC sp_Reporte_OportunidadesGanadasPerdidas")
     resultados = cursor.fetchall()
+    columnas = [col[0] for col in cursor.description] if cursor.description else []
     cursor.close()
     conn.close()
-    return render_template('informes_resultados.html', resultados=resultados, titulo="Oportunidades Ganadas vs Perdidas")
+    return render_template('informes_resultados.html', resultados=resultados, columnas=columnas, titulo="Cierres ganados y perdidos")
 
 @app.route('/etl')
 def etl():

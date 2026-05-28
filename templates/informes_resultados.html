@@ -8,12 +8,14 @@
     </a>
 </div>
 
+<p class="text-muted mb-4">Este resumen te ayuda a ver el comportamiento comercial sin revisar registros uno por uno.</p>
+
 <div class="table-responsive">
     <table class="table table-hover">
         <thead class="table-dark">
             <tr>
-                {% for i in range(resultados[0]|length if resultados else 0) %}
-                <th>{{ resultados[0][i]|string|replace('_', ' ')|title if resultados[0][i] else 'Columna' ~ i }}</th>
+                {% for columna in columnas %}
+                <th>{{ columna|replace('_', ' ')|title }}</th>
                 {% endfor %}
             </tr>
         </thead>
@@ -21,12 +23,21 @@
             {% for row in resultados %}
             <tr>
                 {% for col in row %}
-                <td>{{ col if col is not none else '-' }}</td>
+                {% set col_name = columnas[loop.index0]|lower if columnas and columnas|length > loop.index0 else '' %}
+                <td>
+                    {% if col is none %}
+                        -
+                    {% elif 'monto' in col_name %}
+                        {{ '%.4f'|format(col|float) }}
+                    {% else %}
+                        {{ col }}
+                    {% endif %}
+                </td>
                 {% endfor %}
             </tr>
             {% else %}
             <tr>
-                <td colspan="10" class="text-center">No hay resultados para mostrar</td>
+                <td colspan="{{ columnas|length if columnas else 1 }}" class="text-center">No hay resultados para mostrar</td>
             </tr>
             {% endfor %}
         </tbody>
