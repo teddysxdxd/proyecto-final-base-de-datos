@@ -10,13 +10,13 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Nombre Oportunidad *</label>
-                    <input type="text" name="nombre_oportunidad" class="form-control" required>
+                    <input type="text" name="nombre_oportunidad" class="form-control" value="{{ oportunidad.nombre_oportunidad if oportunidad else '' }}" required>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Tipo Oportunidad *</label>
                     <select name="tipo_oportunidad_id" class="form-control" required>
                         {% for t in tipos %}
-                        <option value="{{ t.tipo_oportunidad_id }}">{{ t.nombre_tipo }}</option>
+                        <option value="{{ t.tipo_oportunidad_id }}" {% if oportunidad and oportunidad.tipo_oportunidad_id == t.tipo_oportunidad_id %}selected{% endif %}>{{ t.nombre_tipo }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -24,7 +24,7 @@
                     <label class="form-label">Cliente *</label>
                     <select name="cliente_id" class="form-control" required>
                         {% for c in clientes %}
-                        <option value="{{ c.cliente_id }}">{{ c.nombre_comercial }}</option>
+                        <option value="{{ c.cliente_id }}" {% if oportunidad and oportunidad.cliente_id == c.cliente_id %}selected{% endif %}>{{ c.nombre_comercial }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -32,7 +32,7 @@
                     <label class="form-label">Asistente Comercial *</label>
                     <select name="empleado_asignado_id" class="form-control" required>
                         {% for a in asistentes %}
-                        <option value="{{ a.empleado_id }}">{{ a.nombre }} {{ a.apellido }}</option>
+                        <option value="{{ a.empleado_id }}" {% if oportunidad and oportunidad.empleado_asignado_id == a.empleado_id %}selected{% endif %}>{{ a.nombre }} {{ a.apellido }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -40,7 +40,7 @@
                     <label class="form-label">Gerente Comercial *</label>
                     <select name="gerente_comercial_id" class="form-control" required>
                         {% for g in gerentes %}
-                        <option value="{{ g.empleado_id }}">{{ g.nombre }} {{ g.apellido }}</option>
+                        <option value="{{ g.empleado_id }}" {% if oportunidad and oportunidad.gerente_comercial_id == g.empleado_id %}selected{% endif %}>{{ g.nombre }} {{ g.apellido }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -48,20 +48,40 @@
                     <label class="form-label">Etapa Actual *</label>
                     <select name="etapa_actual_id" class="form-control" required>
                         {% for e in etapas %}
-                        <option value="{{ e.etapa_id }}">{{ e.nombre_etapa }} ({{ e.porcentaje_cierre }}%)</option>
+                        <option value="{{ e.etapa_id }}" {% if oportunidad and oportunidad.etapa_actual_id == e.etapa_id %}selected{% endif %}>{{ e.nombre_etapa }} ({{ e.porcentaje_cierre }}%)</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-3 mb-3">
                     <label class="form-label">Fecha Inicio *</label>
-                   <input type="date" name="fecha_inicio" value="{{ '' }}">
+                   <input type="date" name="fecha_inicio" class="form-control" value="{{ oportunidad.fecha_inicio.strftime('%Y-%m-%d') if oportunidad and oportunidad.fecha_inicio else '' }}" {% if not oportunidad %}required{% endif %}>
+                </div>
                 <div class="col-md-3 mb-3">
                     <label class="form-label">Fecha Cierre Planificada *</label>
-                    <input type="date" name="fecha_cierre_planificada" class="form-control" required>
+                    <input type="date" name="fecha_cierre_planificada" class="form-control" value="{{ oportunidad.fecha_cierre_planificada.strftime('%Y-%m-%d') if oportunidad and oportunidad.fecha_cierre_planificada else '' }}" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Estado *</label>
+                    <select name="estado_oportunidad" class="form-control" required>
+                        <option value="Abierto" {% if oportunidad and oportunidad.estado_oportunidad == 'Abierto' %}selected{% endif %}>Abierto</option>
+                        <option value="Cerrado" {% if oportunidad and oportunidad.estado_oportunidad == 'Cerrado' %}selected{% endif %}>Cerrado</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Fecha Cierre Real</label>
+                    <input type="date" name="fecha_cierre_real" class="form-control" value="{{ oportunidad.fecha_cierre_real.strftime('%Y-%m-%d') if oportunidad and oportunidad.fecha_cierre_real else '' }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Resultado</label>
+                    <select name="resultado_oportunidad" class="form-control">
+                        <option value="" {% if not oportunidad or not oportunidad.resultado_oportunidad %}selected{% endif %}>-- Sin definir --</option>
+                        <option value="Ganada" {% if oportunidad and oportunidad.resultado_oportunidad == 'Ganada' %}selected{% endif %}>Ganada</option>
+                        <option value="Perdida" {% if oportunidad and oportunidad.resultado_oportunidad == 'Perdida' %}selected{% endif %}>Perdida</option>
+                    </select>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Monto Potencial (Q) *</label>
-                    <input type="number" step="0.01" name="monto_potencial" class="form-control" required>
+                    <input type="number" step="0.01" name="monto_potencial" class="form-control" value="{{ oportunidad.monto_potencial if oportunidad else '' }}" required>
                 </div>
             </div>
             <div class="mt-3">
