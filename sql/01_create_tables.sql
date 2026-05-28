@@ -193,12 +193,14 @@ CREATE TABLE Auditoria (
     auditoria_id INT IDENTITY(1,1) PRIMARY KEY,
     tabla_afectada VARCHAR(100),
     operacion VARCHAR(20),
-    registro_id INT,vw_Oportunidades
-    datos_anteriores NVARCHAR(MAX),  -- CORREGIDO
-    datos_nuevos NVARCHAR(MAX),      -- CORREGIDO
+    registro_id INT,
+    datos_anteriores NVARCHAR(MAX),
+    datos_nuevos NVARCHAR(MAX),
     usuario VARCHAR(100),
     fecha_cambio DATETIME DEFAULT GETDATE()
 );
+
+GO
 
 CREATE OR ALTER VIEW vw_Oportunidades
 AS
