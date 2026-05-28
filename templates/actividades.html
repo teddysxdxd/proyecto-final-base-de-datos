@@ -60,3 +60,16 @@
     </table>
 </div>
 {% endblock %}
+
+{% block scripts %}
+<script>
+    function verActividad(actividadId) {
+        // Mostrar un modal con los detalles de la actividad
+        // Por ahora, una alerta simple
+        alert('Ver detalles de actividad ID: ' + actividadId);
+        
+        // Si quieres redirigir a una página de detalle, usa esto:
+        // window.location.href = '/actividad/' + actividadId;
+    }
+</script>
+{% endblock %}
