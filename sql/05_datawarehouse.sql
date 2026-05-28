@@ -75,11 +75,16 @@ BEGIN
     SET NOCOUNT ON;
     
     -- 1. Limpiar tablas (para recarga completa)
-    TRUNCATE TABLE Fact_Oportunidades;
-    TRUNCATE TABLE Dim_Tiempo;
-    TRUNCATE TABLE Dim_Cliente;
-    TRUNCATE TABLE Dim_Empleado;
-    TRUNCATE TABLE Dim_Etapa;
+    -- Nota: no se puede usar TRUNCATE en dimensiones referenciadas por FK.
+    DELETE FROM Fact_Oportunidades;
+    DELETE FROM Dim_Tiempo;
+    DELETE FROM Dim_Cliente;
+    DELETE FROM Dim_Empleado;
+    DELETE FROM Dim_Etapa;
+
+    -- Reiniciar identidades para mantener IDs consistentes en recargas completas.
+    DBCC CHECKIDENT ('Fact_Oportunidades', RESEED, 0);
+    DBCC CHECKIDENT ('Dim_Tiempo', RESEED, 0);
     
     -- 2. Cargar Dim_Tiempo (últimos 5 años)
     DECLARE @start_date DATE = DATEADD(YEAR, -5, GETDATE());
