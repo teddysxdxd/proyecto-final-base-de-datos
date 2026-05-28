@@ -11,7 +11,7 @@
                     <div class="d-flex justify-content-between">
                         <div>
                             <h5 class="card-title">Clientes</h5>
-                            <h2>{{ clientes_count|default('0') }}</h2>
+                            <h2 id="clientesCount">{{ clientes_count|default('0') }}</h2>
                         </div>
                         <i class="fas fa-users fa-3x opacity-50"></i>
                     </div>
@@ -25,7 +25,7 @@
                     <div class="d-flex justify-content-between">
                         <div>
                             <h5 class="card-title">Oportunidades Activas</h5>
-                            <h2>{{ oportunidades_activas|default('0') }}</h2>
+                            <h2 id="oportunidadesActivasCount">{{ oportunidades_activas|default('0') }}</h2>
                         </div>
                         <i class="fas fa-chart-line fa-3x opacity-50"></i>
                     </div>
@@ -39,7 +39,7 @@
                     <div class="d-flex justify-content-between">
                         <div>
                             <h5 class="card-title">Actividades Pendientes</h5>
-                            <h2>{{ actividades_pendientes|default('0') }}</h2>
+                            <h2 id="actividadesPendientesCount">{{ actividades_pendientes|default('0') }}</h2>
                         </div>
                         <i class="fas fa-tasks fa-3x opacity-50"></i>
                     </div>
@@ -104,6 +104,10 @@
 fetch('/api/dashboard-data')
     .then(response => response.json())
     .then(data => {
+        document.getElementById('clientesCount').textContent = data.clientes_count;
+        document.getElementById('oportunidadesActivasCount').textContent = data.oportunidades_activas;
+        document.getElementById('actividadesPendientesCount').textContent = data.actividades_pendientes;
+
         const ctx = document.getElementById('etapasChart').getContext('2d');
         new Chart(ctx, {
             type: 'pie',

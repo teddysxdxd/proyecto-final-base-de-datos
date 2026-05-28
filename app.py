@@ -304,7 +304,7 @@ def api_dashboard_data():
     cursor = conn.cursor()
     
     # Estadísticas para el dashboard
-    cursor.execute("SELECT COUNT(*) FROM Clientes WHERE activo=1")
+    cursor.execute("SELECT COUNT(*) FROM Clientes")
     clientes_count = cursor.fetchone()[0]
     
     cursor.execute("SELECT COUNT(*) FROM Oportunidades WHERE estado_oportunidad='Abierto' AND activo=1")
@@ -313,12 +313,13 @@ def api_dashboard_data():
     cursor.execute("SELECT COUNT(*) FROM Actividades WHERE estado NOT IN ('Concluido')")
     actividades_pendientes = cursor.fetchone()[0]
     
-    # CORREGIDO: Usar la vista vw_Oportunidades para obtener monto_ponderado
+    # Sumar solo oportunidades abiertas y activas para reflejar el pipeline vigente
     cursor.execute("""
         SELECT ISNULL(SUM(v.monto_ponderado), 0) 
         FROM vw_Oportunidades v
         INNER JOIN Oportunidades o ON v.oportunidad_id = o.oportunidad_id
         WHERE o.activo = 1
+          AND o.estado_oportunidad = 'Abierto'
     """)
     monto_total = cursor.fetchone()[0]
     
